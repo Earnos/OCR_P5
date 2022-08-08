@@ -47,30 +47,32 @@ fetch(url)
      */
 
     btn.addEventListener("click", function getToCart() {
+      // undefined color alert function
+      const colorValue = document.getElementById("colors").value;
+      if (!colorValue) {
+        alert("Veuillez selectionner une couleur");
+        return;
+      }
+      // non-appropriate quantity value
+      const quantity = document.getElementById("quantity").value;
+      if (quantity < 1 || quantity > 100) {
+        alert("Quantité saisie incorrecte");
+        return;
+      }
+
       if (typeof storage !== undefined) {
         //const valueObj = {};
-        const storage = [];
-        storage.push({ id: `${productID}` });
-        storage.push({ colors: document.getElementById("colors").value });
-        storage.push({ quantity: document.getElementById("quantity").value });
+        const storage = JSON.parse(localStorage.getItem("storage")) || [];
+        storage.push({
+          id: `${productID}`,
+          colors: document.getElementById("colors").value,
+          quantity: document.getElementById("quantity").value
+        });
         console.log(storage);
-        // JSON.parse(localStorage.setItem("colors", value.colors)) || [];
-        // document.getElementById("colors").value = currentColors;
-        // storage.push(JSON.parse(localStorage.setItem("currentColors")));
-        // console.log(storage);
-        // storage.localStorage.setItem("colors", value.colors[color]);
 
         localStorage.setItem("storage", JSON.stringify(storage));
-
-        // localStorage.setItem("id", `${productID}`);
-        // localStorage.setItem("colors", document.getElementById("colors").value);
-        // localStorage.setItem("qty", document.getElementById("quantity").value);
         console.log(localStorage);
 
-        // undefined color alert function
-        // getColorValue();
-        // non appropriate quantity value
-        //getQtyValue();
         alert("Produit ajouté au panier");
       } else {
         alert("Une erreur c'est produite, veuillez réessayer s'il vous plaît.");
@@ -80,40 +82,3 @@ fetch(url)
   .catch((err) => {
     console.error("Error:", err);
   });
-
-/**
- * undefined color value
- * @param { string } colors
- * @return { string } alert
- */
-function getColorValue() {
-  const select = document.getElementById("colors");
-  const colorValue = document.getElementById("colors").value;
-  if (typeof colorValue !== select);
-  alert("Veuillez selectionner une couleur");
-}
-
-/**
- * innapropriate quantity value
- * @param { number } quantity
- * @return { string } alert
- */
-function getQtyValue() {
-  const quantity = document.getElementById("quantity").value;
-  if (quantity < 1 && quantity > 100);
-  alert("Quantité saisie incorrecte");
-}
-// Add to cart button
-// const btn = document.getElementById("addToCart");
-// btn.type = "button";
-
-// btn.addEventListener("click", function getToCart() {
-//   localStorage.getItem[(`${value.name}`, "description", "price", "colors")];
-// });
-
-//function getToCart() {}
-
-// function invalidColor() {
-//   if (optionColors != true)
-//   return alert("Veuillez sélectioner une couleur")
-// }
