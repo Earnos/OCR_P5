@@ -41,7 +41,7 @@ fetch(url)
     btn.type = "button";
 
     /**
-     * request HTTP using fetch api
+     * On onclick event, add to cart item's function
      * @param { event } callback
      * @return { localStorage } string
      */
@@ -54,26 +54,36 @@ fetch(url)
         return;
       }
       // non-appropriate quantity value
-      const quantity = document.getElementById("quantity").value;
+      const quantity = parseInt(document.getElementById("quantity").value);
       if (quantity < 1 || quantity > 100) {
         alert("Quantité saisie incorrecte");
         return;
       }
 
+      // localStorage push
       if (typeof storage !== undefined) {
-        //const valueObj = {};
         const storage = JSON.parse(localStorage.getItem("storage")) || [];
-        storage.push({
-          id: `${productID}`,
-          colors: document.getElementById("colors").value,
-          quantity: document.getElementById("quantity").value
-        });
-        console.log(storage);
 
-        localStorage.setItem("storage", JSON.stringify(storage));
-        console.log(localStorage);
-
+        //console.log(localStorage);
         alert("Produit ajouté au panier");
+
+        // If same products id/color, display 1 with quantity++
+        let foundProduct = storage.find(
+          (p) => p.id === productID && colorValue === p.colors
+        );
+        console.log(foundProduct);
+        if (foundProduct !== undefined) {
+          foundProduct.quantity += quantity;
+          console.log(foundProduct);
+        } else if (foundProduct == null) {
+          storage.push({
+            id: `${productID}`,
+            colors: document.getElementById("colors").value,
+            quantity: parseInt(document.getElementById("quantity").value)
+          });
+        }
+        console.log(storage);
+        localStorage.setItem("storage", JSON.stringify(storage));
       } else {
         alert("Une erreur c'est produite, veuillez réessayer s'il vous plaît.");
       }

@@ -8,52 +8,46 @@ let totalQty = 0;
 const delCartItem = () => {
   const deleteSelection = document.querySelectorAll(".deleteItem");
   for (let i = 0; i < deleteSelection.length; i++) {
-    const deleteItem = deleteSelection[i]; // Permet de stocker la ou les valeurs de mon array dans une variable et on obtien un objet.
+    const deleteItem = deleteSelection[i];
     deleteItem.addEventListener("click", () => {
-      const selectId = deleteItem.closest("[data-id]").dataset.id;
-      const selectColor = deleteItem.closest("[data-color]").dataset.color;
-      console.log(selectId);
-      console.log(selectColor);
-
-      const toRemove = productValues.find(
-        (element) => element === selectId || selectColor
-        // element === deleteItem.closest("[data-id]").dataset.id &&
-        // deleteItem.closest("[data-color]").dataset.color
+      const selectId = deleteItem.closest("article").dataset.id;
+      const selectColor = deleteItem.closest("article").dataset.color;
+      const toRemove = productValues.findIndex(
+        (element) => element.id === selectId && selectColor === element.colors
       );
-      console.log(toRemove);
-      console.log(deleteItem);
-      // let dataColor = document.querySelectorAll("[data-color]");
-      // let dataId = document.querySelectorAll("[data-id]");
-      // if (deleteItem === toRemove) {
-      // let index = productValues.indexOf(i);
-      // productValues.splice(index, 1);
-      productValues.splice(toRemove, 3);
-      console.log(productValues.splice(toRemove, 3));
-      //localStorage.setItem("products", JSON.stringify(productValues));
-      //cartArticle.removeChild(article);
-
-      //}
-      // data.datasets.splice(removalIndex, 1);
-      //   data.datasets.find((dataset, index) => {
-      //     if (dataset.id === 'myId') {
-      //        data.datasets.splice(index, 1);
-      //        return true; // stop searching
-      //     }
-      // });
-      // myChart.update();
-      // console.log(selectId);
-      // console.log(selectColor);
-
-      //window.location.reload();
+      productValues.splice(toRemove, 1);
+      localStorage.setItem("storage", JSON.stringify(productValues));
+      window.location.reload();
     });
-
-    // remove the cost of item from total
-    // total -= itemCost[n]
   }
 };
 
+// Uptdate quantity if its directly change on cart's item
+const setQtyChange = () => {
+  const qtyInput = document.querySelectorAll(".itemQuantity");
+  const deleteSelection = document.querySelectorAll(".deleteItem");
+  for (let i = 0; i < qtyInput.length; i++) {
+    const qtyChange = qtyInput[i];
+    const deleteItem = deleteSelection[i];
+    qtyChange.addEventListener("change", updateValue);
+    function updateValue(e) {
+      const selectId = deleteItem.closest("article").dataset.id;
+      const selectColor = deleteItem.closest("article").dataset.color;
+      const toChange = productValues.findIndex(
+        (p) => p.id === selectId && selectColor === p.colors
+      );
+      if (!toChange) {
+        productValues[i].quantity = parseInt(qtyChange.value);
+        localStorage.setItem("storage", JSON.stringify(productValues));
+        console.log(productValues);
+        window.location.reload();
+      }
+    }
+  }
+};
+
+// dynamic product's ID function
 for (let i = 0; i < productValues.length; i++) {
-  // dynamic product's ID function
   const articleID = getProductId();
   function getProductId() {
     return productValues[i].id;
@@ -69,25 +63,6 @@ for (let i = 0; i < productValues.length; i++) {
   descriptionTextColor.innerHTML = productValues[i].colors; // <-----------dynamic value
   const cartQtyInput = document.createElement("input");
   cartQtyInput.value = productValues[i].quantity; // <-----------dynamic value
-
-  // function incrementation quantity for same color selection
-  // function setIncrementationColor() {
-  //   const checkColor = productValues.find(
-  //     (Colors) => productValues[i].colors == productValues[i].colors
-  //   );
-  //   console.log(checkColor);
-  //   return;
-  // }
-
-  //   );
-  //   console.log(checkColor);
-  //   //if (checkColor !== -1)
-  //   if (checkColor) {
-  //     productValues[i].quantity++;
-  //     cartQtyInput.value++;
-  // productValues.find(() => productValues.colors === productValues.colors);
-  // if (productValues[i].colors === productValues[i].colors) {
-  //   productValues.quantity + productValues.quantity == cartQtyInput.value;
 
   // fecth request API in Loop
   const url = `http://localhost:3000/api/products/${articleID}`;
@@ -165,13 +140,12 @@ for (let i = 0; i < productValues.length; i++) {
       totalQty += parseInt(cartQtyInput.value);
       document.getElementById("totalQuantity").innerHTML = totalQty;
       document.getElementById("totalPrice").innerHTML = totalPrice;
-      console.log(totalPrice);
-      console.log(totalQty);
 
-      // for one iteration on loop i
+      // for one iteration on loop
       if (i === productValues.length - 1) {
-        // permet de recuperer sur la derniere itération de ma boucle pour eviter que cette fonction boucle 4 fois
+        // permet de recuperer sur la derniere itération de ma boucle pour eviter que cette fonction boucle plusieurs fois
         delCartItem();
+        setQtyChange();
       }
     })
     .catch((err) => {
