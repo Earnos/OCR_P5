@@ -56,14 +56,14 @@ for (let i = 0; i < productValues.length; i++) {
 
   // data-color & data-id
   const cartArticle = document.createElement("article");
-  cartArticle.setAttribute("data-id", productValues[i].id); // <-----------dynamic value
-  cartArticle.setAttribute("data-color", productValues[i].colors); // <-----------dynamic value
+  cartArticle.setAttribute("data-id", productValues[i].id);
+  cartArticle.setAttribute("data-color", productValues[i].colors);
 
   // LocalStorage values creation&display
   const descriptionTextColor = document.createElement("p");
-  descriptionTextColor.innerHTML = productValues[i].colors; // <-----------dynamic value
+  descriptionTextColor.innerHTML = productValues[i].colors;
   const cartQtyInput = document.createElement("input");
-  cartQtyInput.value = productValues[i].quantity; // <-----------dynamic value
+  cartQtyInput.value = productValues[i].quantity;
 
   // fecth request API in Loop
   const url = `http://localhost:3000/api/products/${articleID}`;
@@ -154,23 +154,42 @@ for (let i = 0; i < productValues.length; i++) {
     });
 }
 
+// Generate random number Orderid
+let setId = () => {
+  let s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  };
+  //return id of format 'aaaaaaaa'-'aaaa'-'aaaa'-'aaaa'-'aaaaaaaaaaaa'
+  return (
+    s4() +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    "-" +
+    s4() +
+    s4() +
+    s4()
+  );
+};
+
+console.log(setId());
+
 // Event input form
 document.querySelector(".cart__order__form").addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  // Fetch POST request
-  fetch(`http://localhost:3000/api/products/order`, {
-    // Methode type
-    method: "POST",
-    // body or content to send
-    body: JSON.stringify(contact, productValues.id),
-    headers: { "Content-type": "application/json; charset=UTF-8" }
-  })
-    .then((response) => response.json(productValues.id)) //orderId ?
-    .catch((err) => console.log(err));
-
-  // window.location.reload();
-
+  // form's values
+  const firstNameValue = document.getElementById("firstName").value;
+  const lastNameValue = document.getElementById("lastName").value;
+  const addressValue = document.getElementById("address").value;
+  const cityValue = document.getElementById("city").value;
+  const mailValue = document.getElementById("email").value;
+  // FormData(document.getElementById("order"));
+  // POST body data
   const contact = {
     firstName: firstNameValue,
     lastName: lastNameValue,
@@ -179,82 +198,47 @@ document.querySelector(".cart__order__form").addEventListener("submit", (e) => {
     email: mailValue
   };
   console.log(contact);
+  // contact's obj & product's array
+  const orderCommandInfo = { userInfo: contact, products: productValues[i].id };
+  console.log(orderCommandInfo);
+  if (
+    isValidText(firstName.value) ||
+    isValidText(lastName.value) ||
+    isValidAddress(address.value) ||
+    isValidCity(city.value) ||
+    isValidEmail(mail.value)
+  ) {
+    // Fetch POST request
+    fetch(`http://localhost:3000/api/products/order`, {
+      // Methode type
+      method: "POST",
+      // body or content to send
+      body: JSON.stringify(orderCommandInfo),
+      headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+      .then((res) => res.json())
+      // .then((data) => {
+      // })
+      .catch((err) => console.log(err));
+    console.log(orderCommandInfo);
+    // redirection to confirmation page
+    sessionStorage.setItem("order", orderCommand);
+    window.location.replace("../html/confirmation.html");
+    return confirm("Confirmer votre commander ?");
+    // return e.preventDefault();
+  } else {
+    e.preventDefault();
+    alert("formulaire non valide");
+    return false;
+  }
 });
 
-// form's values
-let erreur;
-const firstNameValue = document.getElementById("firstName").value;
-const lastNameValue = document.getElementById("lastName").value;
-const addressValue = document.getElementById("address").value;
-const cityValue = document.getElementById("city").value;
-const mailValue = document.getElementById("email").value;
 // form's inputs
 const firstName = document.getElementById("firstName");
 const lastName = document.getElementById("lastName");
 const address = document.getElementById("address");
 const city = document.getElementById("city");
 const mail = document.getElementById("email");
-
-// form's inputs event
-firstName.addEventListener("input", () => {
-  console.log(firstName.value);
-  if (isValidText(firstName.value)) {
-    // function in condition with value in argument
-    document.getElementById("firstNameErrorMsg").innerText = "";
-    console.log("IsOk");
-  } else {
-    console.log("IsnotOk");
-    document.getElementById("firstNameErrorMsg").innerText =
-      "Saisie du prénom incorrecte";
-  }
-});
-
-lastName.addEventListener("input", () => {
-  console.log(lastName.value);
-  if (isValidText(lastName.value)) {
-    document.getElementById("lastNameErrorMsg").innerText = "";
-    console.log("IsOk");
-  } else {
-    console.log("IsnotOk");
-    document.getElementById("lastNameErrorMsg").innerText =
-      "Saisie du nom incorrecte";
-  }
-});
-
-address.addEventListener("input", () => {
-  console.log(address.value);
-  if (isValidAddress(address.value)) {
-    document.getElementById("addressErrorMsg").innerText = "";
-    console.log("IsOk");
-  } else {
-    console.log("IsnotOk");
-    document.getElementById("addressErrorMsg").innerText =
-      "Saisie de l'adresse incorrecte";
-  }
-});
-
-city.addEventListener("input", () => {
-  console.log(city.value);
-  if (isValidCity(city.value)) {
-    document.getElementById("cityErrorMsg").innerText = "";
-    console.log("IsOk");
-  } else {
-    console.log("IsnotOk");
-    document.getElementById("cityErrorMsg").innerText =
-      "Saisie du nom de la ville incorrecte";
-  }
-});
-
-mail.addEventListener("input", () => {
-  console.log(mail.value);
-  if (isValidEmail(mail.value)) {
-    document.getElementById("emailErrorMsg").innerText = "";
-    console.log("IsOk");
-  } else {
-    console.log("IsnotOk");
-    document.getElementById("emailErrorMsg").innerText = "Email incorrect";
-  }
-});
 
 // regex validation's test
 const isValidText = (value) => {
@@ -263,7 +247,6 @@ const isValidText = (value) => {
 };
 
 const isValidAddress = (value) => {
-  // const re = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)*$/;
   const re = /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)*$/;
   return re.test(value);
 };
@@ -279,51 +262,55 @@ const isValidEmail = (value) => {
   return re.test(value);
 };
 
-// Regex declarations
-// const nameReg = /^[a-z\d]{5,12}/i;
-// const addressReg =
-//   /^(\d+) ?([A-Za-z](?= ))? (.*?) ([^ ]+?) ?((?<= )APT)? ?((?<= )\d*)?$/i;
-// const cityReg = /^[a-zA-Z][a-zA-Z\s-]+[a-zA-Z]$/i;
-// const emailReg = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i;
+// form's inputs event
+firstName.addEventListener("input", () => {
+  console.log(firstName.value);
+  if (isValidText(firstName.value)) {
+    // function in condition with value in argument
+    document.getElementById("firstNameErrorMsg").innerText = "";
+  } else {
+    document.getElementById("firstNameErrorMsg").innerText =
+      "Saisie du prénom incorrecte";
+  }
+});
 
-//Regex to validate input fields
-// const patterns = {
-//   username: /^[a-z\d]{5,12}/i,
-//   name: /^[\p{L}\p{M} \-\.',]*$/,
-//   Address:
-//     /^(\d+) ?([A-Za-z](?= ))? (.*?) ([^ ]+?) ?((?<= )APT)? ?((?<= )\d*)?$/,
-//   city: /^[a-zA-Z][a-zA-Z\s-]+[a-zA-Z]$/,
-//   email: /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i
-// };
+lastName.addEventListener("input", () => {
+  console.log(lastName.value);
+  if (isValidText(lastName.value)) {
+    document.getElementById("lastNameErrorMsg").innerText = "";
+  } else {
+    document.getElementById("lastNameErrorMsg").innerText =
+      "Saisie du nom incorrecte";
+  }
+});
 
-// error message on unvalid user's inputs
-// if (!res1) {
-//   errorMsg = document.getElementById("firstNameErrorMsg");
-//   errorMsg.innerHTML = "Veuillez renseigner un nom";
-//   // erreur = "Veuillez renseigner un nom";
-// }
-// if (!lastNameValue) {
-//   erreur = "Veuillez renseigner un prénom";
-// }
-// if (erreur) {
-//   e.preventDefault();
-// } else {
-//   alert("Votre commande a été validée");
-// }
+address.addEventListener("input", () => {
+  console.log(address.value);
+  if (isValidAddress(address.value) || address.value == "") {
+    document.getElementById("addressErrorMsg").innerText = "";
+  } else {
+    document.getElementById("addressErrorMsg").innerText =
+      "Saisie de l'adresse incorrecte";
+  }
+});
 
-// Event for post order
-// const orderInput = document.getElementById("order");
-// orderInput.addEventListener("submit", () => {
-//   // Fetch POST request
-//   fetch(`http://localhost:3000/api/products/order`, {
-//     // Methode type
-//     method: "POST",
-//     // body or content to send
-//     body: JSON.stringify(contact, productValues.id),
-//     headers: { "Content-type": "application/json; charset=UTF-8" }
-//   })
-//     .then((response) => response.json(productValues.id)) //orderId ?
-//     .catch((err) => console.log(err));
+city.addEventListener("input", () => {
+  console.log(city.value);
+  if (isValidCity(city.value) || city.value == "") {
+    document.getElementById("cityErrorMsg").innerText = "";
+  } else {
+    document.getElementById("cityErrorMsg").innerText =
+      "Saisie du nom de la ville incorrecte";
+  }
+});
 
-// window.location.reload();
-// });
+mail.addEventListener("input", () => {
+  console.log(mail.value);
+  if (isValidEmail(mail.value) || mail.value == "") {
+    document.getElementById("emailErrorMsg").innerText = "";
+    console.log("IsOk");
+  } else {
+    console.log("IsnotOk");
+    document.getElementById("emailErrorMsg").innerText = "Email incorrect";
+  }
+});
