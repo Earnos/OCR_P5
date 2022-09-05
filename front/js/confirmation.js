@@ -1,5 +1,6 @@
-// recuperation orderId command informations
-sessionStorage.getItem(order);
+// Get the order Id of URL
+const orderId = new URL(location.href).searchParams.get("orderId");
 // display the order Id
-const orderID = URLSearchParams.get(orderId);
-document.getElementById("orderId").innerHTML = `${orderID}`;
+document.getElementById("orderId").innerHTML = `${orderId}`;
+// clear cart
+localStorage.clear();

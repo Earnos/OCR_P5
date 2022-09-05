@@ -13,7 +13,6 @@ fetch(url)
     }
   })
   .then((value) => {
-    //console.log(value);
     for (i = 0; i < value.length; i++) {
       //for (let product of value)
       const cardLink = document.createElement("a");

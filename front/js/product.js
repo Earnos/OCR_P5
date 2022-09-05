@@ -63,18 +63,14 @@ fetch(url)
       // localStorage push
       if (typeof storage !== undefined) {
         const storage = JSON.parse(localStorage.getItem("storage")) || [];
-
-        //console.log(localStorage);
         alert("Produit ajouté au panier");
 
         // If same products id/color, display 1 with quantity++
         let foundProduct = storage.find(
           (p) => p.id === productID && colorValue === p.colors
         );
-        console.log(foundProduct);
         if (foundProduct !== undefined) {
           foundProduct.quantity += quantity;
-          console.log(foundProduct);
         } else if (foundProduct == null) {
           storage.push({
             id: `${productID}`,
@@ -82,7 +78,6 @@ fetch(url)
             quantity: parseInt(document.getElementById("quantity").value)
           });
         }
-        console.log(storage);
         localStorage.setItem("storage", JSON.stringify(storage));
       } else {
         alert("Une erreur c'est produite, veuillez réessayer s'il vous plaît.");
