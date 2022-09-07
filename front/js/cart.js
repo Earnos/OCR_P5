@@ -7,7 +7,7 @@ let totalQty = 0;
  * Remove cart's item
  * @function
  * @param { string } argument
- * @param { Event } callback
+ * @param { Event } click
  */
 const delCartItem = () => {
   const deleteSelection = document.querySelectorAll(".deleteItem");
@@ -25,8 +25,12 @@ const delCartItem = () => {
     });
   }
 };
-
-// Uptdate quantity if its directly change on cart's item
+/**
+ * Uptdate quantity if its directly change on cart's item
+ * @function
+ * @param { string } argument
+ * @param { event } change
+ */
 const setQtyChange = () => {
   const qtyInput = document.querySelectorAll(".itemQuantity");
   const deleteSelection = document.querySelectorAll(".deleteItem");
@@ -218,7 +222,13 @@ const address = document.getElementById("address");
 const city = document.getElementById("city");
 const mail = document.getElementById("email");
 
-// regex validation's test
+/**
+ * regex validation's test
+ * @function IsValid
+ * @param { string, number } value
+ * @return { RegExp } test()
+ */
+
 const isValidText = (value) => {
   const re = /^([^0-9]*)$/;
   return re.test(value);
@@ -240,7 +250,12 @@ const isValidEmail = (value) => {
   return re.test(value);
 };
 
-// form's inputs event
+/**
+ * form's inputs event
+ * @Event
+ * @param { event } input
+ */
+
 firstName.addEventListener("input", () => {
   if (isValidText(firstName.value)) {
     // function in condition with value in argument
